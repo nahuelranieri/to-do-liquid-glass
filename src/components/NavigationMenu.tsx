@@ -85,10 +85,10 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* Collections Section */}
-          <div className="flex-1 px-6 pb-6">
+          <div className="flex-1 px-6 pb-6 opacity-60 pointer-events-none" >
             <div className="mb-4">
               <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">
-                Collections
+                Collections (soon!)
               </h3>
             </div>
             
