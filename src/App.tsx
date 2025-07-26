@@ -16,6 +16,27 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedItems = localStorage.getItem('todoItems');
+    if (savedItems) {
+      try {
+        const parsedItems = JSON.parse(savedItems).map((item: any) => ({
+          ...item,
+          createdAt: new Date(item.createdAt) // Convert string back to Date
+        }));
+        setItems(parsedItems);
+      } catch (error) {
+        console.error('Error loading items from localStorage:', error);
+      }
+    }
+  }, []);
+
+  // Save data to localStorage whenever items change
+  useEffect(() => {
+    localStorage.setItem('todoItems', JSON.stringify(items));
+  }, [items]);
+
   const addItem = () => {
     if (newItemText.trim()) {
       const newItem: ListItem = {
@@ -57,7 +78,7 @@ function App() {
       <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50/30 to-violet-50/20 pointer-events-none" />
       
       {/* Header */}
-      <header className="relative z-10 px-6 pt-12 pb-4">
+      <header className="relative z-10 px-6 pt-12 pb-4 max-w-md mx-auto">
         <div className="flex items-center justify-between">
           <button
             onClick={() => setMenuOpen(true)}
@@ -95,7 +116,7 @@ function App() {
       />
 
       {/* Main Content Area */}
-      <main className="relative z-10 px-6 pb-32">
+      <main className="relative z-10 px-6 pb-32 max-w-md mx-auto">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center mt-20 text-center">
             <div className="w-24 h-24 bg-gradient-to-br from-violet-100 to-violet-50 rounded-full flex items-center justify-center mb-6">
@@ -151,7 +172,7 @@ function App() {
                   {editMode && (
                     <button
                       onClick={() => deleteItem(item.id)}
-                      className="flex-shrink-0 ml-3 p-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-500 transition-all duration-200 opacity-0 group-hover:opacity-100"
+                      className="flex-shrink-0 ml-3 p-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-500 transition-all duration-200"
                     >
                       <X size={16} />
                     </button>
@@ -164,36 +185,35 @@ function App() {
       </main>
 
       {/* Fixed Bottom Input */}
-      <div className="fixed bottom-0 left-0 right-0 z-20">
+      <div className="fixed bottom-0 left-0 right-0 z-20 max-w-md mx-auto">
         {/* Background Blur */}
         <div className="absolute inset-0 backdrop-blur-xl bg-white/80" />
         
         {/* Content */}
         <div className="relative p-6 pt-4">
-          <div className="flex items-center gap-3">
-            <div className="flex-1 relative">
-              <input
-                ref={inputRef}
-                type="text"
-                value={newItemText}
-                onChange={(e) => setNewItemText(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Add new item..."
-                className="w-full px-5 py-4 text-gray-900 placeholder-gray-500 bg-gray-50/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-300 transition-all duration-300 text-[16px]"
-                style={{ fontSize: '16px' }} // Prevents zoom on iOS
-              />
-            </div>
+          <div className="relative">
+            <input
+              ref={inputRef}
+              type="text"
+              value={newItemText}
+              onChange={(e) => setNewItemText(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Add new item..."
+              className="w-full px-5 py-4 pr-14 text-gray-900 placeholder-gray-500 bg-gray-50/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-300 transition-all duration-300 text-[16px]"
+              style={{ fontSize: '16px' }} // Prevents zoom on iOS
+            />
             
+            {/* Plus icon inside input */}
             <button
               onClick={addItem}
               disabled={!newItemText.trim()}
-              className={`p-4 rounded-2xl transition-all duration-300 ${
+              className={`absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-xl transition-all duration-300 ${
                 newItemText.trim()
                   ? 'bg-violet-500 hover:bg-violet-600 text-white shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 scale-100 hover:scale-105'
                   : 'bg-gray-200 text-gray-400 scale-90'
               }`}
             >
-              <Plus size={24} />
+              <Plus size={20} />
             </button>
           </div>
         </div>
